@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  postgresdb:
+    image: mdillon/postgis:11
+    container_name: FGAvisos-database
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    ports:
+      - "5430:5432"
+    volumes:
+      - ./init_db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgresVolume:/var/lib/postgresql/data
+      - postgresConfig:/etc/postgresql/11/main
+
+  app:
+    build: .
+    container_name: FGAvisos-api
+    ports:
+      - "8001:8001"
+    volumes:
+      - ".:/app"
+    depends_on:
+      - postgresdb
+  
+
+volumes:
+  postgresVolume:
+  postgresConfig:

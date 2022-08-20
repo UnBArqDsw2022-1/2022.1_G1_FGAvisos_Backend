@@ -1,0 +1,3 @@
+CREATE DATABASE FGAvisos;
+\c FGAvisos
+CREATE EXTESION FGAvisos;
