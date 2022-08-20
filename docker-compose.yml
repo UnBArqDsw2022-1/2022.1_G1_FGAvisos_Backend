@@ -1,9 +1,9 @@
 version: '3'
 
 services:
-  postgresdb:
+  fgaaviso_db:
     image: mdillon/postgis:11
-    container_name: FGAvisos-database
+    container_name: fgavisos-database
     environment:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
@@ -16,13 +16,13 @@ services:
 
   app:
     build: .
-    container_name: FGAvisos-api
+    container_name: fgavisos-api
     ports:
       - "8001:8001"
     volumes:
       - ".:/app"
     depends_on:
-      - postgresdb
+      - fgaaviso_db
   
 
 volumes:
