@@ -1,36 +1,18 @@
 # 2022.1_G1_fgavisos_Backend
 
-Para rodar o backend atualmente:
+Pré-requisito para rodar o projeto: Docker e Docker Compose
+
+Para rodar o backend:
 
 ```
 docker-compose build
 ```
 
 ```
-docker-compose up
+docker-compose up 
 ```
 
-
-Procurar o ID do container com name igual a fgavisos-api
-
+Ou apenas: 
 ```
-docker ps
-```
-
-Entrar no container usando:
-
-```
-docker exec -it <container_id> bash
-```
-
-Dentro do container executar o seguinte comando:
-
-```
-python3 create_tables.py
-```
-
-Para sair do container:
-
-```
-exit
+docker-compose up --build
 ```

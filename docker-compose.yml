@@ -7,10 +7,10 @@ services:
     environment:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: "fgavisos"
     ports:
       - "5430:5432"
     volumes:
-      - ./init_db/init.sql:/docker-entrypoint-initdb.d/init.sql
       - postgresVolume:/var/lib/postgresql/data
       - postgresConfig:/etc/postgresql/11/main
 
