@@ -1,4 +1,3 @@
-from enum import unique
 from sqlalchemy import Column, Integer, ForeignKey
 
 from db.config import settings
