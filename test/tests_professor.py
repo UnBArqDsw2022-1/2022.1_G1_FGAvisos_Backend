@@ -3,7 +3,27 @@ from fastapi.testclient import TestClient
 from main import app
 
 
-client = TestClient(app, base_url="http://localhost")
+client = TestClient(app)
+
+def test_get_professor():
+    response = client.get("/professor/2")
+    assert response.status_code == 200
+
+
+def test_get_professor_invalid():
+    response = client.get("/professor/5")
+    assert response.status_code == 404
+
+
+def test_get_professor_invalid():
+    response = client.get("/professor/2")
+    assert response.status_code == 200
+    body = response.json()
+    assert body["nome"] == 'Fellipe Pereira'
+    assert body["id"] == 2
+    assert body["email"] == 'fellipe@gmail.com'
+    assert body["matricula"] == 200017772
+    assert body["senha"] == 'fellps'
 
 
 def test_post_professor_status():
