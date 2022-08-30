@@ -4,6 +4,7 @@ from src.models.aluno import AlunoModel
 from src.schemas.aluno import AlunoSchema
 
 from db.database import get_session
+from src.api.routers.routers import api_router
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,8 +13,9 @@ from sqlalchemy.future import select
 # Exemplos apenas para teste
 
 app = FastAPI()
+app.include_router(api_router)
 
-@app.get('/')
+@app.get('/', status_code=status.HTTP_200_OK)
 def teste():
     return {"teste": "teste"}
 
