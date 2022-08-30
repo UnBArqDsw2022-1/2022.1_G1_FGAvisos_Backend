@@ -16,7 +16,14 @@ professor_repository = ProfessorRepository()
 
 
 @router.post('/', status_code=status.HTTP_201_CREATED, response_model=ProfessorSchema)
-async def create_professor(professor: ProfessorSchema, db: AsyncSession = Depends(get_session)):
+async def create_professor(
+                            professor: ProfessorSchema, 
+                            db: AsyncSession=Depends(get_session)):
     professor = await professor_repository.create(professor=professor, db=db)
     return professor
 
+
+@router.delete('/{professor_id}', status_code=status.HTTP_202_ACCEPTED)
+async def delete_professor(professor_id: int, db: AsyncSession=Depends(get_session)):
+    result = await professor_repository.delete(id=professor_id, db=db)
+    return result
