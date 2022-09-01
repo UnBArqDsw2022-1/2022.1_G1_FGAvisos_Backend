@@ -34,3 +34,7 @@ async def put_professor(id: int, professor_atualizado: ProfessorSchema,
                         db: AsyncSession = Depends(get_session)):
     result = await professor_repository.update(id=id, body=professor_atualizado, db=db)
     return result
+
+@router.get('/{id}', status_code=status.HTTP_200_OK, response_model=ProfessorSchema)
+async def get_professor(id: int, db: AsyncSession = Depends(get_session)):
+    return await professor_repository.show(id, db)

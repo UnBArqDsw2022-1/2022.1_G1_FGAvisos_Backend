@@ -65,3 +65,11 @@ class ProfessorRepository:
 
             await session.commit()
             return professor
+    
+    async def show(self, id: int, db: AsyncSession):
+        professor = await self.professor_existe(id=id, db=db)
+
+        if not professor:
+            raise HTTPException(detail='Usuario não encontrado', 
+                                status_code=status.HTTP_404_NOT_FOUND) 
+        return professor
