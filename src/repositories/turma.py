@@ -28,8 +28,9 @@ class TurmaRepository:
             db.add(nova_turma)
             await db.commit()
         except Exception as error:
-            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                                detail=error)
+            raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=error)
         return nova_turma
 
     async def list(self, db: AsyncSession):
@@ -50,8 +51,9 @@ class TurmaRepository:
             turmas_professor: List[TurmaModel] = result.scalars().all()
 
             if not turmas_professor:
-                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                                    detail="Não foram encontradas turmas para este professor.")
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Não foram encontradas turmas para este professor.")
             return turmas_professor
 
     async def update(self, id: int, body: TurmaSchema, db: AsyncSession):
