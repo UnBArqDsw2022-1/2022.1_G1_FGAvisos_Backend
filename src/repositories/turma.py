@@ -18,8 +18,7 @@ class TurmaRepository:
             turma: TurmaModel = result.scalar()
 
         if not turma:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                                detail="Turma não encontrada")
+            return None
         return turma
 
     async def create(self, turma: TurmaSchema, db: AsyncSession):
@@ -72,4 +71,14 @@ class TurmaRepository:
             
             await session.commit()
             return turma
-            
+    
+    async def delete(self, id: int, db: AsyncSession):
+        turma_a_deletar = await self.turma_existe(id, db)
+
+        if not turma_a_deletar:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail="Turma não encontrada")
+        
+        await db.delete(turma_a_deletar)
+        await db.commit()
+        return dict(message="Turma deletada com sucesso.")
