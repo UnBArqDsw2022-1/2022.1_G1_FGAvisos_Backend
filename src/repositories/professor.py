@@ -73,3 +73,14 @@ class ProfessorRepository:
             raise HTTPException(detail='Usuario não encontrado', 
                                 status_code=status.HTTP_404_NOT_FOUND) 
         return professor
+
+    async def list(self, db: AsyncSession):
+        async with db as session:
+            query_professores = select(ProfessorModel).order_by(ProfessorModel.id)
+            result = await session.execute(query_professores)
+            professores = result.scalars().all()
+
+            if not professores:
+                raise HTTPException(detail='Nenhum professor foi encontrado', 
+                                status_code=status.HTTP_404_NOT_FOUND)
+            return professores
