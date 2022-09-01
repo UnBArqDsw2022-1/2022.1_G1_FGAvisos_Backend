@@ -54,3 +54,22 @@ class TurmaRepository:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                     detail="Não foram encontradas turmas para este professor.")
             return turmas_professor
+
+    async def update(self, id: int, body: TurmaSchema, db: AsyncSession):
+        async with db as session:
+            query = select(TurmaModel).filter(TurmaModel.id == id)
+            result = await session.execute(query)
+            turma: TurmaModel = result.scalar()
+
+            if not turma:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                    detail="Nenhuma turma foi encontrada.")
+
+            body = body.dict()
+            for key in body:
+                if body[key] != None:
+                    setattr(turma, key, body[key])
+            
+            await session.commit()
+            return turma
+            

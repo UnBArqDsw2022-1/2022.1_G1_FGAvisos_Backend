@@ -33,3 +33,8 @@ async def get_turmas_professor(id_professor: int, db: AsyncSession=Depends(get_s
 @router.get('/{id}', status_code=status.HTTP_200_OK, response_model=TurmaSchema)
 async def get_turma(id: int, db: AsyncSession=Depends(get_session)):
     return await repository_turma.turma_existe(id, db)
+
+
+@router.put('/{id}', status_code=status.HTTP_202_ACCEPTED, response_model=TurmaSchema)
+async def alterar_turma(id: int, turma_alterada: TurmaSchema, db: AsyncSession=Depends(get_session)):
+    return await repository_turma.update(id, turma_alterada, db)
