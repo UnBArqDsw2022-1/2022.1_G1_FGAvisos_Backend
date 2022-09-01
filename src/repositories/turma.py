@@ -1,3 +1,5 @@
+from typing import List
+from unittest import result
 from src.models.turma import TurmaModel
 from src.schemas.turma import TurmaSchema
 
@@ -30,3 +32,25 @@ class TurmaRepository:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail=error)
         return nova_turma
+
+    async def list(self, db: AsyncSession):
+        async with db as session:
+            query_turmas = select(TurmaModel)
+            result = await session.execute(query_turmas)
+            turmas: List[TurmaModel] = result.scalars().all()
+
+            if not turmas:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                    detail="Nenhuma turma foi encontrada.")
+            return turmas
+
+    async def show_turmas_professor(self, id_professor: int, db: AsyncSession):
+        async with db as session:
+            query = select(TurmaModel).filter(TurmaModel.professor == id_professor)
+            result = await session.execute(query)
+            turmas_professor: List[TurmaModel] = result.scalars().all()
+
+            if not turmas_professor:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                    detail="Não foram encontradas turmas para este professor.")
+            return turmas_professor
