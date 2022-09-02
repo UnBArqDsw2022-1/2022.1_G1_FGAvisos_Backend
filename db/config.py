@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     password = 'postgres'
     host = 'fgaaviso_db'
 
-    DB_URL: str = f'postgresql+asyncpg://{user}:{password}@{host}/fgavisos'
+    DB_URL: str = f'postgresql+asyncpg://{user}:{password}@{host}:5432/fgavisos'
 
 
     class Config:

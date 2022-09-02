@@ -27,3 +27,9 @@ async def create_professor(
 async def delete_professor(professor_id: int, db: AsyncSession=Depends(get_session)):
     result = await professor_repository.delete(id=professor_id, db=db)
     return result
+
+
+@router.get('/{professor_id}', status_code=status.HTTP_200_OK)
+async def get_professor(professor_id: int, db: AsyncSession=Depends(get_session)):
+    result = await professor_repository.show(id=professor_id, db=db)
+    return result
