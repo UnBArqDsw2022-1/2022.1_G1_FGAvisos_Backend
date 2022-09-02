@@ -1,4 +1,5 @@
 from typing import List
+from unittest import result
 
 from src.models.professor import ProfessorModel
 
@@ -46,3 +47,40 @@ class ProfessorRepository:
             await session.commit()
 
             return dict(message = "Usuario deletado com sucesso")
+
+    async def update(self, id: int, body: ProfessorSchema, db: AsyncSession):        
+        async with db as session:
+            query_professor = select(ProfessorModel).filter(ProfessorModel.id == id)
+            result = await session.execute(query_professor)
+            professor: ProfessorModel = result.scalar()
+
+            if not professor:
+                raise HTTPException(detail='Usuario não encontrado', 
+                                    status_code=status.HTTP_404_NOT_FOUND) 
+            
+            body = body.dict()
+            for key in body:
+                if body[key] != None:
+                    setattr(professor, key, body[key])
+
+            await session.commit()
+            return professor
+    
+    async def show(self, id: int, db: AsyncSession):
+        professor = await self.professor_existe(id=id, db=db)
+
+        if not professor:
+            raise HTTPException(detail='Usuario não encontrado', 
+                                status_code=status.HTTP_404_NOT_FOUND) 
+        return professor
+
+    async def list(self, db: AsyncSession):
+        async with db as session:
+            query_professores = select(ProfessorModel).order_by(ProfessorModel.id)
+            result = await session.execute(query_professores)
+            professores = result.scalars().all()
+
+            if not professores:
+                raise HTTPException(detail='Nenhum professor foi encontrado', 
+                                status_code=status.HTTP_404_NOT_FOUND)
+            return professores
