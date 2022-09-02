@@ -7,10 +7,10 @@ from datetime import datetime
 
 class TurmaSchema(BaseModel):
     id: Optional[int]
-    professor: str
-    ano: str
+    professor: int
+    ano: int
     semestre: int
-    nome_disciplina: Optional[str]
+    nome_disciplina: str
     created_at: Optional[datetime]
 
     class Config:
