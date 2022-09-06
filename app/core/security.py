@@ -43,7 +43,7 @@ async def criar_acesso_token(subject: str) -> str:
     payload = {
         "exp": expira, 
         "iat": datetime.now(tz=timezone_sp), 
-        "sub": subject
+        "sub": str(subject)
     }
     encoded_jwt = jwt.encode(
         payload, 

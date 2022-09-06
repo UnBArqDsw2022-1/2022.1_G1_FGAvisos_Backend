@@ -8,8 +8,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from app.core.config import settings
-from core.database import get_session
-from core.security import oauth2_schema
+from app.core.database import get_session
+from app.core.security import oauth2_schema
 from app.models.professor import ProfessorModel
 
 
@@ -19,7 +19,7 @@ async def obter_professor_atual(
 ):
     try:
         payload = jwt.decode(
-            token, settings.JWT_SECRET, algorithms=[settings.ALGORITHM]
+            token, key=settings.JWT_SECRET, algorithms=[settings.ALGORITHM]
         )
         id_professor: str = payload.get("sub")
     except (jwt.JWTError, ValidationError):

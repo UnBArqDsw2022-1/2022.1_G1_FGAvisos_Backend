@@ -61,6 +61,7 @@ class ProfessorRepository:
             query_professor = select(ProfessorModel).filter(ProfessorModel.id == id)
             result = await session.execute(query_professor)
             professor: ProfessorModel = result.scalar()
+            print(id, "--------------------------------------------")
 
             if not professor:
                 raise HTTPException(detail='Usuario não encontrado', 
