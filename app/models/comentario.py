@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 
-from core.config import settings
+from app.core.config import settings
 
 import datetime
 
