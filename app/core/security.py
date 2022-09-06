@@ -9,6 +9,13 @@ from datetime import datetime, timedelta
 from pytz import timezone
 
 from app.core.config import settings
+from app.models.professor import ProfessorModel
+
+from pydantic import EmailStr
+
+from sqlalchemy.future import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 
 
 oauth2_schema = OAuth2PasswordBearer(
@@ -44,3 +51,20 @@ async def criar_acesso_token(subject: str) -> str:
     )
 
     return encoded_jwt
+
+
+async def autenticacao_professor(
+    email: EmailStr, 
+    senha: str, 
+    db: AsyncSession
+):
+    async with db as session:
+        query = select(ProfessorModel).filter(ProfessorModel.email == email)
+        result = await session.execute(query)
+        professor: ProfessorModel = result.scalar()
+
+        if not professor:
+            return None
+        if not verifica_senha(senha, professor.senha):
+            return None
+        return professor
