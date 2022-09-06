@@ -30,7 +30,7 @@ async def obter_professor_atual(
     
     async with db as session:
         query = await session.execute(
-            select(ProfessorModel).filter(ProfessorModel.id == id_professor)
+            select(ProfessorModel).filter(ProfessorModel.id == int(id_professor))
         )
         professor = query.scalar()
 

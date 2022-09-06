@@ -1,3 +1,4 @@
+from typing import Optional
 from passlib.context import CryptContext
 
 from fastapi.security import OAuth2PasswordBearer
@@ -57,7 +58,7 @@ async def autenticacao_professor(
     email: EmailStr, 
     senha: str, 
     db: AsyncSession
-):
+) -> Optional[ProfessorModel]:
     async with db as session:
         query = select(ProfessorModel).filter(ProfessorModel.email == email)
         result = await session.execute(query)
