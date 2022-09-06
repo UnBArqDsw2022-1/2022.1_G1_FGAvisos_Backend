@@ -3,12 +3,12 @@ from fastapi import APIRouter, status, Depends
 
 from typing import List
 
-from src.schemas.professor import ProfessorSchema
+from app.schemas.professor import ProfessorSchema
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.repositories.professor import ProfessorRepository
+from app.repositories.professor import ProfessorRepository
 
-from db.database import get_session
+from core.database import get_session
 
 
 router = APIRouter()

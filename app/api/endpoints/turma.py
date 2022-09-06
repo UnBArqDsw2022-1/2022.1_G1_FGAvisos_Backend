@@ -2,13 +2,13 @@ from fastapi import APIRouter, status, Depends, HTTPException
 
 from typing import List
 
-from src.schemas.turma import TurmaSchema
-from src.repositories.turma import TurmaModel
-from src.repositories.turma import TurmaRepository
+from app.schemas.turma import TurmaSchema
+from app.repositories.turma import TurmaModel
+from app.repositories.turma import TurmaRepository
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from db.database import get_session
+from core.database import get_session
 
 
 router = APIRouter()

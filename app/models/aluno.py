@@ -1,4 +1,4 @@
-from src.models.usuario import UsuarioModel
+from app.models.usuario import UsuarioModel
 
 from sqlalchemy import Column, BigInteger
 

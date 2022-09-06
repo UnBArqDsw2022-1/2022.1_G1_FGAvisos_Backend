@@ -1,10 +1,10 @@
 from fastapi import FastAPI, status, Depends, HTTPException
 
-from src.models.aluno import AlunoModel
-from src.schemas.aluno import AlunoSchema
+from app.models.aluno import AlunoModel
+from app.schemas.aluno import AlunoSchema
 
-from db.database import get_session
-from src.api.routers.routers import api_router
+from core.database import get_session
+from app.api.routers.routers import api_router
 
 from sqlalchemy.ext.asyncio import AsyncSession
 

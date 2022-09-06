@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
-from src.api.endpoints import professor
-from src.api.endpoints import turma
+from app.api.endpoints import professor
+from app.api.endpoints import turma
 
 
 api_router = APIRouter()

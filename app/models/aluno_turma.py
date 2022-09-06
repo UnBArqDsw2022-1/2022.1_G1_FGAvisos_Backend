@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, ForeignKey
 
-from db.config import settings
+from core.config import settings
 
 
 class AlunoPossuiTurma(settings.Base):

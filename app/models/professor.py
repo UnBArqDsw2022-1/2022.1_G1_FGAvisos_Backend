@@ -1,6 +1,6 @@
 from sqlalchemy import Column, BigInteger, Boolean
 
-from src.models.usuario import UsuarioModel
+from app.models.usuario import UsuarioModel
 
 
 class ProfessorModel(UsuarioModel):

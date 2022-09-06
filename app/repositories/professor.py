@@ -1,11 +1,11 @@
 from typing import List
 from unittest import result
 
-from src.models.professor import ProfessorModel
+from app.models.professor import ProfessorModel
 
 from fastapi import HTTPException, status
 
-from src.schemas.professor import ProfessorSchema
+from app.schemas.professor import ProfessorSchema
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select

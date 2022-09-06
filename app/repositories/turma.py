@@ -1,7 +1,7 @@
 from typing import List
 from unittest import result
-from src.models.turma import TurmaModel
-from src.schemas.turma import TurmaSchema
+from app.models.turma import TurmaModel
+from app.schemas.turma import TurmaSchema
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
