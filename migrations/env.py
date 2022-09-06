@@ -18,7 +18,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from core.config import settings
+from app.core.config import settings
 import app.models.__all_models
 target_metadata = settings.Base.metadata
 

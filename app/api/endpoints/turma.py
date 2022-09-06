@@ -8,7 +8,7 @@ from app.repositories.turma import TurmaRepository
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import get_session
+from app.core.database import get_session
 
 
 router = APIRouter()

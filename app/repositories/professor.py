@@ -2,10 +2,10 @@ from typing import List
 from unittest import result
 
 from app.models.professor import ProfessorModel
+from app.schemas.professor import ProfessorSchema
+from app.core.security import gerar_senha_hash
 
 from fastapi import HTTPException, status
-
-from app.schemas.professor import ProfessorSchema
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -24,16 +24,24 @@ class ProfessorRepository:
             return professor
 
     async def create(self, professor: ProfessorSchema, db: AsyncSession):
-        novo_professor: ProfessorModel = ProfessorModel(**professor.dict())
-        
         try:
-            db.add(novo_professor)
+            new_professor: ProfessorModel = ProfessorModel(
+                nome=professor.nome,
+                email=professor.email,
+                senha=gerar_senha_hash(professor.senha),
+                numero_telefone=professor.numero_telefone,
+                dt_nascimento=professor.dt_nascimento,
+                created_at=professor.created_at,
+                matricula=professor.matricula,
+                is_coordenador=professor.is_coordenador
+            )
+            db.add(new_professor)
             await db.commit()
-        except Exception as error:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail=error)
-
-        return novo_professor
+        except Exception as erro:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
+                                detail=f"Exeção -> {erro}")
+        return new_professor
+        
 
     async def delete(self, id: int, db: AsyncSession):
         professor = await self.professor_existe(id=id, db=db)
