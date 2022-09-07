@@ -1,6 +1,9 @@
 from app.models.aluno import AlunoModel
 from app.schemas.aluno import AlunoSchema
 from app.core.security import gerar_senha_hash
+from app.models.aluno_turma import AlunoTurmaModel
+from app.schemas.aluno_turma import AlunoTurmaSchema
+from app.models.turma import TurmaModel
 
 from fastapi import HTTPException, status
 
@@ -20,6 +23,17 @@ class AlunoRepository:
             if not aluno:
                 return None
             return aluno
+
+    async def turma_existe(self, id: int, db: AsyncSession):
+        async with db as session:
+            query_turma = session.execute(
+                select(TurmaModel).filter(TurmaModel.id == id)
+            )
+            turma: TurmaModel = query_turma.scalar()
+
+            if not turma:
+                return None
+            return turma
 
     async def create(self, aluno: AlunoSchema, db: AsyncSession):
         try:
@@ -84,3 +98,35 @@ class AlunoRepository:
                 raise HTTPException(detail='Nenhum aluno foi encontrado',
                                     status_code=status.HTTP_404_NOT_FOUND)
             return alunos
+
+    async def registrar_em_turma(
+        self,
+        id_aluno: int,
+        id_turma:int,
+        db: AsyncSession
+    ):
+        turma: TurmaModel = self.turma_existe(id_turma, db)
+        if not turma:
+            raise HTTPException(
+                detail='Nenhum aluno foi encontrado',
+                status_code=status.HTTP_404_NOT_FOUND
+            )
+
+        aluno_turma: AlunoTurmaModel = AlunoTurmaModel(
+            id_aluno=id_aluno, id_turma=id_turma
+        )
+        db.add(aluno_turma)
+        await db.commit()
+
+        return dict(mensage="Aluno cadastrado na turma com sucesso.")
+
+
+    async def obter_turmas_registradas(self, id_usuario: int, db: AsyncSession):
+        async with db as session:
+            select_turmas = select(TurmaModel).where(
+                AlunoTurmaModel.id_aluno == id_usuario).join(
+                AlunoTurmaModel, TurmaModel.id == AlunoTurmaModel.id_turma)
+            resultado_select = await session.execute(select_turmas)
+            turmas = resultado_select.scalars().all()
+
+            return turmas

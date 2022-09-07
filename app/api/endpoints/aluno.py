@@ -41,14 +41,14 @@ async def login(
 
 
 @router.get('/logado', status_code=status.HTTP_200_OK, response_model=AlunoSchema)
-def opter_professor_logado(
+def opter_aluno_logado(
     professor_logado: AlunoModel = Depends(obter_aluno_logado)
 ):
     return professor_logado
 
 
 @router.delete('/', status_code=status.HTTP_202_ACCEPTED)
-async def delete_professor(
+async def delete_aluno(
     professor_logado: AlunoModel = Depends(obter_aluno_logado),
     db: AsyncSession=Depends(get_session)
 ):
@@ -71,10 +71,33 @@ async def alterar_dados_conta(
 
 
 @router.get('/{id}', status_code=status.HTTP_200_OK, response_model=AlunoSchema)
-async def get_professor(id: int, db: AsyncSession = Depends(get_session)):
+async def get_aluno(id: int, db: AsyncSession = Depends(get_session)):
     return await repository_aluno.show(id, db)
 
 
 @router.get('/', status_code=status.HTTP_200_OK, response_model=List[AlunoSchema])
-async def get_professores(db: AsyncSession = Depends(get_session)):
+async def get_alunos(db: AsyncSession = Depends(get_session)):
     return await repository_aluno.list(db)
+
+
+@router.post('/', status_code=status.HTTP_202_ACCEPTED)
+async def cadastrar_em_turma(
+    id_turma: int,
+    aluno_logado: AlunoModel = Depends(obter_aluno_logado),
+    db: AsyncSession = Depends(get_session)
+):
+    return await repository_aluno.registrar_em_turma(
+        id_aluno=aluno_logado.id,
+        id_turma=id_turma,
+        db=db
+    )
+
+
+@router.get('/turmas/registradas')
+async def turmas_registradas(
+    aluno_logado: AlunoModel = Depends(obter_aluno_logado),
+    db: AsyncSession = Depends(get_session)
+):
+    return await repository_aluno.obter_turmas_registradas(aluno_logado.id, db)
+
+
