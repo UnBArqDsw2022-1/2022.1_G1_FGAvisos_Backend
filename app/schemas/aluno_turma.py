@@ -3,7 +3,7 @@ from typing import Any, Optional
 from pydantic import BaseModel
 
 
-class AlunoPossuiTurmaSchema(BaseModel):
+class AlunoTurmaSchema(BaseModel):
     id: Optional[int]
     id_aluno: int
     id_turma: int
