@@ -3,6 +3,8 @@ from app.schemas.aluno import AlunoSchema
 from app.core.security import gerar_senha_hash
 from app.models.aluno_turma import AlunoTurmaModel
 from app.schemas.aluno_turma import AlunoTurmaSchema
+from app.schemas.aviso import AvisoSchema
+from app.models.aviso import AvisoModel
 from app.models.turma import TurmaModel
 
 from fastapi import HTTPException, status
@@ -123,10 +125,21 @@ class AlunoRepository:
 
     async def obter_turmas_registradas(self, id_usuario: int, db: AsyncSession):
         async with db as session:
-            select_turmas = select(TurmaModel).where(
-                AlunoTurmaModel.id_aluno == id_usuario).join(
-                AlunoTurmaModel, TurmaModel.id == AlunoTurmaModel.id_turma)
+            select_turmas = select(TurmaModel).join(
+                AlunoTurmaModel, TurmaModel.id == AlunoTurmaModel.id_turma).\
+                where(AlunoTurmaModel.id_aluno == id_usuario)
             resultado_select = await session.execute(select_turmas)
             turmas = resultado_select.scalars().all()
 
             return turmas
+
+    async def obter_avisos_viculados(self, id_usuario: int, db: AsyncSession):
+        async with db as session:
+            select_avisos = select(AvisoModel).join(
+                TurmaModel, TurmaModel.id == AvisoModel.turma).\
+                join(AlunoTurmaModel, AlunoTurmaModel.id_turma == TurmaModel.id).where(
+                AlunoTurmaModel.id_aluno == id_usuario)
+            resultado_select = await session.execute(select_avisos)
+            avisos_viculados = resultado_select.scalars().all()
+
+            return avisos_viculados

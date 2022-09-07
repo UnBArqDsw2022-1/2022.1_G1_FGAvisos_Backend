@@ -101,3 +101,9 @@ async def turmas_registradas(
     return await repository_aluno.obter_turmas_registradas(aluno_logado.id, db)
 
 
+@router.get('/avisos/vinculados')
+async def avisos_vinculados(
+    aluno_logado: AlunoModel = Depends(obter_aluno_logado),
+    db: AsyncSession = Depends(get_session)
+):
+    return await repository_aluno.obter_avisos_viculados(aluno_logado.id, db)
