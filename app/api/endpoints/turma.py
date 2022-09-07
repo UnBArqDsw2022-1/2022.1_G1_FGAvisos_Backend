@@ -8,7 +8,7 @@ from app.models.professor import ProfessorModel
 from app.schemas.turma import TurmaSchema, TurmaSchemaCreate, TurmaSchemaUp
 from app.repositories.turma import TurmaRepository
 from app.core.database import get_session
-from app.core.deps import obter_professor_atual
+from app.core.deps import obter_professor_logado
 
 
 router = APIRouter()
@@ -18,7 +18,7 @@ repository_turma = TurmaRepository()
 @router.post('/', status_code=status.HTTP_201_CREATED, response_model=TurmaSchema)
 async def post_turma(
             turma: TurmaSchemaCreate, 
-            criador: ProfessorModel = Depends(obter_professor_atual),
+            criador: ProfessorModel = Depends(obter_professor_logado),
             db: AsyncSession=Depends(get_session)):
     return await repository_turma.create(criador.id, turma, db)
 
@@ -48,7 +48,7 @@ async def get_turma(id: int, db: AsyncSession=Depends(get_session)):
 async def alterar_turma(
     id: int, 
     turma_alterada: TurmaSchemaUp,
-    professor_atual: ProfessorModel = Depends(obter_professor_atual),
+    professor_atual: ProfessorModel = Depends(obter_professor_logado),
     db: AsyncSession=Depends(get_session)
 ):
     return await repository_turma.update(
@@ -62,7 +62,7 @@ async def alterar_turma(
 @router.delete('/{id}', status_code=status.HTTP_202_ACCEPTED)
 async def apagar_turma(
     id: int,
-    professor_atual: ProfessorModel = Depends(obter_professor_atual),
+    professor_atual: ProfessorModel = Depends(obter_professor_logado),
     db: AsyncSession=Depends(get_session)
 ):
     return await repository_turma.delete(id, professor_atual.id, db)

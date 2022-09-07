@@ -1,6 +1,3 @@
-from typing import List
-from unittest import result
-
 from app.models.professor import ProfessorModel
 from app.schemas.professor import ProfessorSchema
 from app.core.security import gerar_senha_hash

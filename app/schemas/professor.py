@@ -13,6 +13,7 @@ class ProfessorSchema(BaseModel):
     dt_nascimento: Optional[datetime]
     matricula: int
     is_coordenador: Optional[bool]
+    created_at: Optional[datetime]
 
     class Config:
         orm_mode=True
