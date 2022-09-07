@@ -1,5 +1,4 @@
 from typing import List
-from unittest import result
 from app.models.turma import TurmaModel
 from app.schemas.turma import TurmaSchema
 
@@ -21,8 +20,9 @@ class TurmaRepository:
             return None
         return turma
 
-    async def create(self, turma: TurmaSchema, db: AsyncSession):
+    async def create(self, id_professor: int, turma: TurmaSchema, db: AsyncSession):
         nova_turma: TurmaModel = TurmaModel(**turma.dict())
+        nova_turma.professor = id_professor
 
         try:
             db.add(nova_turma)
@@ -56,16 +56,22 @@ class TurmaRepository:
                     detail="Não foram encontradas turmas para este professor.")
             return turmas_professor
 
-    async def update(self, id: int, body: TurmaSchema, db: AsyncSession):
+    async def update(self, id: int, body: TurmaSchema, id_professor_atual: int, db: AsyncSession):
         async with db as session:
             query = select(TurmaModel).filter(TurmaModel.id == id)
             result = await session.execute(query)
             turma: TurmaModel = result.scalar()
 
             if not turma:
-                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                                    detail="Nenhuma turma foi encontrada.")
-
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Nenhuma turma foi encontrada."
+                )
+            if turma.professor != id_professor_atual:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Você não possui permissão para alterar essa turma!"
+                )
             body = body.dict()
             for key in body:
                 if body[key] != None:
@@ -74,12 +80,19 @@ class TurmaRepository:
             await session.commit()
             return turma
     
-    async def delete(self, id: int, db: AsyncSession):
+    async def delete(self, id: int, id_professor_atual: int, db: AsyncSession):
         turma_a_deletar = await self.turma_existe(id, db)
 
         if not turma_a_deletar:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                                detail="Turma não encontrada")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Turma não encontrada"
+            )
+        if turma_a_deletar.professor != id_professor_atual:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Você não possui permissão para apagar essa turma!"
+            )
         
         await db.delete(turma_a_deletar)
         await db.commit()

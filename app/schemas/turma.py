@@ -5,9 +5,8 @@ from pydantic import BaseModel
 from datetime import datetime
 
 
-class TurmaSchema(BaseModel):
+class TurmaSchemaCreate(BaseModel):
     id: Optional[int]
-    professor: int
     ano: int
     semestre: int
     nome_disciplina: str
@@ -15,3 +14,14 @@ class TurmaSchema(BaseModel):
 
     class Config:
         orm_mode=True
+
+
+class TurmaSchema(TurmaSchemaCreate):
+    professor: int
+
+
+class TurmaSchemaUp(TurmaSchema):
+    ano: Optional[int]
+    semestre: Optional[int]
+    nome_disciplina: Optional[str]
+    professor: Optional[int]
