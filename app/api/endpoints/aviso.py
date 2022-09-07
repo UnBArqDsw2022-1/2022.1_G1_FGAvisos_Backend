@@ -1,4 +1,4 @@
-from app.core.deps import obter_professor_atual
+from app.core.deps import obter_professor_logado
 from app.core.database import get_session
 from app.schemas.aviso import AvisoSchema, AvissoSchemaCreate, AvisoSchemaUp
 from app.repositories.aviso import AvisoRepository
@@ -19,7 +19,7 @@ repository_aviso = AvisoRepository()
 @router.post("/", status_code=201, response_model=AvisoSchema)
 async def criar_aviso(
     aviso: AvissoSchemaCreate,
-    professor: ProfessorModel = Depends(obter_professor_atual),
+    professor: ProfessorModel = Depends(obter_professor_logado),
     db: AsyncSession = Depends(get_session)
 ):
     return await repository_aviso.inserir(aviso, professor.id, db)
@@ -64,7 +64,7 @@ async def obter_todos_avisos_por_professor(
 @router.delete("/{id_aviso}", status_code=status.HTTP_202_ACCEPTED)
 async def deletar_aviso(
     id_aviso: int,
-    professor: ProfessorModel = Depends(obter_professor_atual),
+    professor: ProfessorModel = Depends(obter_professor_logado),
     db: AsyncSession = Depends(get_session)
 ):
     return await repository_aviso.deletar(id_aviso, professor.id, db)
@@ -74,7 +74,7 @@ async def deletar_aviso(
 async def alterar_aviso(
     id_aviso: int,
     aviso_alterado: AvisoSchemaUp,
-    professor: ProfessorModel = Depends(obter_professor_atual),
+    professor: ProfessorModel = Depends(obter_professor_logado),
     db: AsyncSession = Depends(get_session)
 ):
     return await repository_aviso.alterar(
