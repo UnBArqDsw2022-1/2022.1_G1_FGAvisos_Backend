@@ -18,14 +18,6 @@ router = APIRouter()
 professor_repository = ProfessorRepository()
 
 
-@router.post('/signup', status_code=status.HTTP_201_CREATED, response_model=ProfessorSchema)
-async def post_usuario_jwt(
-    user: ProfessorSchemaCreate, 
-    db: AsyncSession = Depends(get_session)
-):
-    return await professor_repository.create(user, db)
-
-
 @router.post('/login')
 async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),

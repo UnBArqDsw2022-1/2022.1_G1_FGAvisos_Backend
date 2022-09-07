@@ -18,14 +18,6 @@ router = APIRouter()
 repository_aluno = AlunoRepository()
 
 
-@router.post('/signup', status_code=status.HTTP_201_CREATED, response_model=AlunoSchema)
-async def post_usuario_jwt(
-    user: AlunoSchemaCreate,
-    db: AsyncSession = Depends(get_session)
-):
-    return await repository_aluno.create(user, db)
-
-
 @router.post('/login')
 async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
