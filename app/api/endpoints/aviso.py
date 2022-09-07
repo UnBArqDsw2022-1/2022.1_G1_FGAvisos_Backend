@@ -3,8 +3,9 @@ from app.core.database import get_session
 from app.schemas.aviso import AvisoSchema, AvissoSchemaCreate, AvisoSchemaUp
 from app.repositories.aviso import AvisoRepository
 from app.models.professor import ProfessorModel
+from app.core.exceptions import Exceptions
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 
 from typing import List, Optional
 
@@ -14,6 +15,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 router = APIRouter()
 
 repository_aviso = AvisoRepository()
+
+exception = Exceptions()
 
 
 @router.post("/", status_code=201, response_model=AvisoSchema)
@@ -29,10 +32,7 @@ async def criar_aviso(
 async def obter_aviso(id_aviso: int, db: AsyncSession = Depends(get_session)):
     aviso = await repository_aviso.aviso_existe(id_aviso, db)
     if not aviso:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Aviso não encontrado."
-        )
+        raise exception.nao_encontrado("Aviso")
     return aviso
 
 

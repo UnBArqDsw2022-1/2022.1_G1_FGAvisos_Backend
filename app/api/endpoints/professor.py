@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status, Depends, HTTPException
+from fastapi import APIRouter, status, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
 from typing import List
@@ -6,17 +6,19 @@ from typing import List
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.professor import ProfessorModel
-from app.schemas.professor import ProfessorSchema, ProfessorSchemaCreate, ProfessorSchemaUp
+from app.schemas.professor import ProfessorSchema, ProfessorSchemaUp
 from app.repositories.professor import ProfessorRepository
 from app.core.database import get_session
 from app.core.security import autenticacao_usuario, criar_acesso_token
 from app.core.deps import obter_professor_logado
+from app.core.exceptions import Exceptions
 
 
 router = APIRouter()
 
 professor_repository = ProfessorRepository()
 
+exceptions = Exceptions()
 
 @router.post('/login')
 async def login(
@@ -30,10 +32,7 @@ async def login(
         db=db
     )
     if not professor:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, 
-            detail='Dados de acesso incorretos.'
-        )
+        raise exceptions.acesso_incorreto()
     return {
         "access_token": criar_acesso_token(subject=professor.id),
         "token_type": "bearer",

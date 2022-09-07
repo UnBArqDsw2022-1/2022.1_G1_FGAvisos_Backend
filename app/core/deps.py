@@ -12,7 +12,10 @@ from app.core.database import get_session
 from app.core.security import oauth2_schema
 from app.models.professor import ProfessorModel
 from app.models.aluno import AlunoModel
+from app.core.exceptions import Exceptions
 
+
+exception = Exceptions()
 
 async def obter_usuario_atual(
     usuarioModel,
@@ -25,10 +28,8 @@ async def obter_usuario_atual(
         )
         id_usuario: str = payload.get("sub")
     except (jwt.JWTError, ValidationError):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Não foi possível validar as credenciais."
-        )
+        raise exception.credenciais_invalida()
+
     async with db as session:
         query = await session.execute(
             select(usuarioModel).filter(usuarioModel.id == int(id_usuario))
@@ -36,7 +37,7 @@ async def obter_usuario_atual(
         usuario = query.scalar()
 
         if not usuario:
-            raise HTTPException(status_code=404, detail="Professor não encontrado.")
+            raise exception.nao_encontrado("Professor")
         return usuario
 
 async def obter_professor_logado(

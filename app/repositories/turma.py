@@ -1,11 +1,13 @@
 from typing import List
 from app.models.turma import TurmaModel
 from app.schemas.turma import TurmaSchema
+from app.core.exceptions import Exceptions
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from fastapi import status, HTTPException
+
+exceptions = Exceptions()
 
 
 class TurmaRepository:
@@ -28,9 +30,7 @@ class TurmaRepository:
             db.add(nova_turma)
             await db.commit()
         except Exception as error:
-            raise HTTPException(
-                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail=error)
+            raise exceptions.default_exception(error)
         return nova_turma
 
     async def list(self, db: AsyncSession):
@@ -40,8 +40,7 @@ class TurmaRepository:
             turmas: List[TurmaModel] = result.scalars().all()
 
             if not turmas:
-                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                                    detail="Nenhuma turma foi encontrada.")
+                raise exceptions.nao_encontrados("turma")
             return turmas
 
     async def show_turmas_professor(self, id_professor: int, db: AsyncSession):
@@ -51,9 +50,7 @@ class TurmaRepository:
             turmas_professor: List[TurmaModel] = result.scalars().all()
 
             if not turmas_professor:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="Não foram encontradas turmas para este professor.")
+                raise exceptions.nao_encontrados("turma com este professor")
             return turmas_professor
 
     async def update(self, id: int, body: TurmaSchema, id_professor_atual: int, db: AsyncSession):
@@ -63,15 +60,10 @@ class TurmaRepository:
             turma: TurmaModel = result.scalar()
 
             if not turma:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="Nenhuma turma foi encontrada."
-                )
+                raise exceptions.nao_encontrados("turma")
             if turma.professor_id != id_professor_atual:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="Você não possui permissão para alterar essa turma!"
-                )
+                raise exceptions.sem_altorizacao("alterar essa turma!")
+
             body = body.dict()
             for key in body:
                 if body[key] != None:
@@ -84,15 +76,9 @@ class TurmaRepository:
         turma_a_deletar = await self.turma_existe(id, db)
 
         if not turma_a_deletar:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Turma não encontrada"
-            )
+            raise exceptions.nao_encontrado("Turma")
         if turma_a_deletar.professor_id != id_professor_atual:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Você não possui permissão para apagar essa turma!"
-            )
+            raise exceptions.sem_altorizacao("apagar essa turma!")
         
         await db.delete(turma_a_deletar)
         await db.commit()

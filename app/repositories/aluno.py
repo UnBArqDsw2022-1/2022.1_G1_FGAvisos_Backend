@@ -2,16 +2,15 @@ from app.models.aluno import AlunoModel
 from app.schemas.aluno import AlunoSchema
 from app.core.security import gerar_senha_hash
 from app.models.aluno_turma import AlunoTurmaModel
-from app.schemas.aluno_turma import AlunoTurmaSchema
-from app.schemas.aviso import AvisoSchema
 from app.models.aviso import AvisoModel
 from app.models.turma import TurmaModel
-
-from fastapi import HTTPException, status
+from app.core.exceptions import Exceptions
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
+
+exceptions = Exceptions()
 
 class AlunoRepository:
 
@@ -44,16 +43,14 @@ class AlunoRepository:
             db.add(novo_aluno)
             await db.commit()
         except Exception as erro:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                                detail=f"Exeção -> {erro}")
+            raise exceptions.default_exception(erro)
         return novo_aluno
 
     async def delete(self, id: int, db: AsyncSession):
         aluno = await self.aluno_existe(id=id, db=db)
 
         if not aluno:
-            raise HTTPException(detail='Usuario não encontrado',
-                                status_code=status.HTTP_404_NOT_FOUND)
+            raise exceptions.nao_encontrado("Usuario")
 
         async with db as session:
             await session.delete(aluno)
@@ -69,8 +66,7 @@ class AlunoRepository:
             aluno: AlunoModel = result.scalar()
 
             if not aluno:
-                raise HTTPException(detail='Usuario não encontrado',
-                                    status_code=status.HTTP_404_NOT_FOUND)
+                raise exceptions.nao_encontrado("Usuario")
 
             body = body.dict()
             for key in body:
@@ -83,10 +79,8 @@ class AlunoRepository:
 
     async def show(self, id: int, db: AsyncSession):
         aluno = await self.aluno_existe(id=id, db=db)
-
         if not aluno:
-            raise HTTPException(detail='Usuario não encontrado',
-                                status_code=status.HTTP_404_NOT_FOUND)
+            raise exceptions.nao_encontrado("Usuario")
         return aluno
 
     async def list(self, db: AsyncSession):
@@ -97,8 +91,7 @@ class AlunoRepository:
             alunos = result.scalars().all()
 
             if not alunos:
-                raise HTTPException(detail='Nenhum aluno foi encontrado',
-                                    status_code=status.HTTP_404_NOT_FOUND)
+                raise exceptions.nao_encontrados("aluno")
             return alunos
 
     async def registrar_em_turma(
@@ -109,10 +102,7 @@ class AlunoRepository:
     ):
         turma: TurmaModel = self.turma_existe(id_turma, db)
         if not turma:
-            raise HTTPException(
-                detail='Nenhum aluno foi encontrado',
-                status_code=status.HTTP_404_NOT_FOUND
-            )
+            raise exceptions.nao_encontrado("Turma")
 
         aluno_turma: AlunoTurmaModel = AlunoTurmaModel(
             id_aluno=id_aluno, id_turma=id_turma
@@ -130,7 +120,6 @@ class AlunoRepository:
                 where(AlunoTurmaModel.id_aluno == id_usuario)
             resultado_select = await session.execute(select_turmas)
             turmas = resultado_select.scalars().all()
-
             return turmas
 
     async def obter_avisos_viculados(self, id_usuario: int, db: AsyncSession):
@@ -141,5 +130,4 @@ class AlunoRepository:
                 AlunoTurmaModel.id_aluno == id_usuario)
             resultado_select = await session.execute(select_avisos)
             avisos_viculados = resultado_select.scalars().all()
-
             return avisos_viculados

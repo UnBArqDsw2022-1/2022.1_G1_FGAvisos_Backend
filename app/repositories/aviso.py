@@ -1,13 +1,14 @@
 from app.models.aviso import AvisoModel
 from app.schemas.aviso import AvisoSchema
+from app.core.exceptions import Exceptions
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from fastapi import HTTPException, status
-
 from typing import List
 
+
+exceptions = Exceptions()
 
 class AvisoRepository:
     async def aviso_existe(self, id: str, db: AsyncSession):
@@ -28,30 +29,21 @@ class AvisoRepository:
             db.add(novo_aviso)
             await db.commit()
         except Exception as Error:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=Error
-            )
+            raise exceptions.bad_request(Error)
         return novo_aviso
 
     async def deletar(self, id: int, id_prof_atual: int, db: AsyncSession):
         aviso_a_deletar = await self.aviso_existe(id, db)
 
         if not aviso_a_deletar:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Aviso não encontrado."
-            )
+            raise exceptions.nao_encontrado("Aviso")
         if aviso_a_deletar.autor != id_prof_atual:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Você não possui autorização para deletar este aviso."
-            )
+            raise exceptions.nao_autorizado("deletar este aviso.")
 
         await db.delete(aviso_a_deletar)
         await db.commit()
 
-        return dict(message = "Aviso deletado com sucesso")
+        return dict(message="Aviso deletado com sucesso")
 
     async def alterar(
             self,
@@ -67,15 +59,10 @@ class AvisoRepository:
             aviso_selecionado: AvisoModel = query.scalar()
 
             if not aviso_selecionado:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="Aviso não encontrado."
-                )
+                raise exceptions.nao_encontrado("Aviso")
             if aviso_selecionado.autor != id_prof_atual:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Você não possui autorização para alterar este aviso."
-                )
+                raise exceptions.nao_autorizado("alterar este aviso.")
+
             body = body.dict()
             for key in body:
                 if body[key] is not None:
@@ -91,10 +78,7 @@ class AvisoRepository:
             avisos: List[AvisoModel] = query_avisos.scalars().all()
 
             if not avisos:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="Nenhum aviso foi encontrado."
-                )
+                raise exceptions.nao_encontrados("aviso")
             return avisos
 
     async def obter_todos_por_turma(self, id_turma, db: AsyncSession):
@@ -105,10 +89,7 @@ class AvisoRepository:
             avisos: List[AvisoModel] = query_avisos.scalars().all()
 
             if not avisos:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="Nenhum aviso foi encontrado."
-                )
+                raise exceptions.nao_encontrados("aviso")
             return avisos
 
     async def obter_por_professor(self, id_professor: int, db: AsyncSession):
@@ -119,10 +100,7 @@ class AvisoRepository:
             avisos: List[AvisoModel] = query_avisos.scalars().all()
 
             if not avisos:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="Nenhum aviso vinculado a este professor foi encontrado."
-                )
+                raise exceptions.nao_encontrados("aviso vinculado a este professor")
             return avisos
 
     async def obter_por_professor_e_turma(
@@ -135,8 +113,5 @@ class AvisoRepository:
             avisos: List[AvisoModel] = resultado.scalars().all()
 
             if not avisos:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="Nenhum aviso foi encontrado."
-                )
+                raise exceptions.nao_encontrados("aviso")
             return avisos

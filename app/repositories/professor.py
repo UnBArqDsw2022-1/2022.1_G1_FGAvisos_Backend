@@ -1,12 +1,13 @@
 from app.models.professor import ProfessorModel
 from app.schemas.professor import ProfessorSchema
 from app.core.security import gerar_senha_hash
-
-from fastapi import HTTPException, status
+from app.core.exceptions import Exceptions
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
+
+exceptions = Exceptions()
 
 class ProfessorRepository:
 
@@ -35,8 +36,7 @@ class ProfessorRepository:
             db.add(new_professor)
             await db.commit()
         except Exception as erro:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
-                                detail=f"Exeção -> {erro}")
+            raise exceptions.default_exception(erro)
         return new_professor
         
 
@@ -44,8 +44,7 @@ class ProfessorRepository:
         professor = await self.professor_existe(id=id, db=db)
 
         if not professor:
-            raise HTTPException(detail='Usuario não encontrado', 
-                                status_code=status.HTTP_404_NOT_FOUND) 
+            raise exceptions.nao_encontrado("Professor")
 
         async with db as session:
             await session.delete(professor)
@@ -60,8 +59,7 @@ class ProfessorRepository:
             professor: ProfessorModel = result.scalar()
 
             if not professor:
-                raise HTTPException(detail='Usuario não encontrado', 
-                                    status_code=status.HTTP_404_NOT_FOUND) 
+                raise exceptions.nao_encontrado("Professor")
             
             body = body.dict()
             for key in body:
@@ -75,8 +73,7 @@ class ProfessorRepository:
         professor = await self.professor_existe(id=id, db=db)
 
         if not professor:
-            raise HTTPException(detail='Usuario não encontrado', 
-                                status_code=status.HTTP_404_NOT_FOUND) 
+            raise exceptions.nao_encontrado("Professor")
         return professor
 
     async def list(self, db: AsyncSession):
@@ -86,6 +83,5 @@ class ProfessorRepository:
             professores = result.scalars().all()
 
             if not professores:
-                raise HTTPException(detail='Nenhum professor foi encontrado', 
-                                status_code=status.HTTP_404_NOT_FOUND)
+                raise exceptions.nao_encontrados("professor")
             return professores
