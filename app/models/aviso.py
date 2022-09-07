@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean
 
 from app.core.config import settings
 
@@ -12,5 +12,6 @@ class AvisoModel(settings.Base):
     corpo = Column(String(2000), nullable=False)
     autor = Column(Integer, ForeignKey('professor.id'), nullable=False)
     tag = Column(String(20))
+    aviso_geral = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.datetime.now())
     turma = Column(Integer, ForeignKey('turma.id'), nullable=False)

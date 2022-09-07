@@ -22,7 +22,7 @@ class TurmaRepository:
 
     async def create(self, id_professor: int, turma: TurmaSchema, db: AsyncSession):
         nova_turma: TurmaModel = TurmaModel(**turma.dict())
-        nova_turma.professor = id_professor
+        nova_turma.professor_id = id_professor
 
         try:
             db.add(nova_turma)
@@ -46,7 +46,7 @@ class TurmaRepository:
 
     async def show_turmas_professor(self, id_professor: int, db: AsyncSession):
         async with db as session:
-            query = select(TurmaModel).filter(TurmaModel.professor == id_professor)
+            query = select(TurmaModel).filter(TurmaModel.professor_id == id_professor)
             result = await session.execute(query)
             turmas_professor: List[TurmaModel] = result.scalars().all()
 
@@ -67,7 +67,7 @@ class TurmaRepository:
                     status_code=status.HTTP_404_NOT_FOUND,
                     detail="Nenhuma turma foi encontrada."
                 )
-            if turma.professor != id_professor_atual:
+            if turma.professor_id != id_professor_atual:
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
                     detail="Você não possui permissão para alterar essa turma!"
@@ -88,7 +88,7 @@ class TurmaRepository:
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Turma não encontrada"
             )
-        if turma_a_deletar.professor != id_professor_atual:
+        if turma_a_deletar.professor_id != id_professor_atual:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Você não possui permissão para apagar essa turma!"

@@ -17,11 +17,11 @@ class TurmaSchemaCreate(BaseModel):
 
 
 class TurmaSchema(TurmaSchemaCreate):
-    professor: int
+    professor_id: int
 
 
 class TurmaSchemaUp(TurmaSchema):
     ano: Optional[int]
     semestre: Optional[int]
     nome_disciplina: Optional[str]
-    professor: Optional[int]
+    professor_id: Optional[int]

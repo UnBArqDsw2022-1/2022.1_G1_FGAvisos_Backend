@@ -9,7 +9,7 @@ class TurmaModel(settings.Base):
     __tablename__ = 'turma'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    professor = Column(Integer, ForeignKey('professor.id'))
+    professor_id = Column(Integer, ForeignKey('professor.id'))
     ano = Column(Integer, nullable=False)
     semestre = Column(Integer, nullable=False)
     nome_disciplina = Column(String(75))

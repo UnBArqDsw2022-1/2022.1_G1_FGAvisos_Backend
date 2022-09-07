@@ -35,7 +35,7 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('nome', sa.String(length=150), nullable=False),
     sa.Column('email', sa.String(length=150), nullable=False),
-    sa.Column('senha', sa.String(length=20), nullable=False),
+    sa.Column('senha', sa.String(length=256), nullable=False),
     sa.Column('numero_telefone', sa.String(length=20), nullable=True),
     sa.Column('dt_nascimento', sa.DateTime(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
@@ -47,12 +47,12 @@ def upgrade() -> None:
     )
     op.create_table('turma',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
-    sa.Column('professor', sa.Integer(), nullable=True),
+    sa.Column('professor_id', sa.Integer(), nullable=True),
     sa.Column('ano', sa.Integer(), nullable=False),
     sa.Column('semestre', sa.Integer(), nullable=False),
     sa.Column('nome_disciplina', sa.String(length=75), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
-    sa.ForeignKeyConstraint(['professor'], ['professor.id'], ),
+    sa.ForeignKeyConstraint(['professor_id'], ['professor.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('aluno_turma',
@@ -71,6 +71,7 @@ def upgrade() -> None:
     sa.Column('corpo', sa.String(length=2000), nullable=False),
     sa.Column('autor', sa.Integer(), nullable=False),
     sa.Column('tag', sa.String(length=20), nullable=True),
+    sa.Column('aviso_geral', sa.Boolean(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('turma', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['autor'], ['professor.id'], ),
