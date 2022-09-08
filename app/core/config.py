@@ -2,18 +2,24 @@ from pydantic import BaseSettings
 
 from sqlalchemy.orm import declarative_base
 
+from dotenv import load_dotenv
+
+import os
+
 
 class Settings(BaseSettings):
+    load_dotenv()
 
     Base = declarative_base()
     
-    user = 'postgres'
-    password = 'postgres'
-    host = 'fgaaviso_db'
+    USER = os.getenv("USER_DB")
+    PASSWORD = os.getenv("PASSWORD")
+    HOST = os.getenv("HOST")
+    JWT_SECRET: str = os.getenv("JWT_KEY")
+    DB: str = os.getenv("DB")
 
-    DB_URL: str = f'postgresql+asyncpg://{user}:{password}@{host}/fgavisos'
+    DB_URL: str = f'postgresql+asyncpg://{USER}:{PASSWORD}@{HOST}/{DB}'
 
-    JWT_SECRET: str = "fc05c7570c34597ddbf3a010cedd9247d5839bd74b6c5f96f770ed4b0f4dc8ff"
     ALGORITHM: str = 'HS256'
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60*24*7 # uma semana
 
@@ -21,3 +27,4 @@ class Settings(BaseSettings):
         case_sensitive = True
 
 settings: Settings = Settings()
+print(settings.DB_URL)
