@@ -27,4 +27,3 @@ class Settings(BaseSettings):
         case_sensitive = True
 
 settings: Settings = Settings()
-print(settings.DB_URL)
