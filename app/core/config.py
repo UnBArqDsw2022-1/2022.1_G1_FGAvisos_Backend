@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     DB_URL: str = f'postgresql+asyncpg://{USER}:{PASSWORD}@{HOST}/{DB}'
 
     if PORT != "":
-        DB_URL = f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}"
+        DB_URL = f"postgresql+asyncpg://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}"
 
 
     ALGORITHM: str = 'HS256'
