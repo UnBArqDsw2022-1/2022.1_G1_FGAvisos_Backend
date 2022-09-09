@@ -17,10 +17,16 @@ PASSWORD = os.getenv("PASSWORD")
 HOST = os.getenv("HOST")
 JWT_SECRET: str = os.getenv("JWT_KEY")
 DB: str = os.getenv("DB")
+PORT: str = os.getenv("PORT")
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 db_url = f"postgresql://{USER}:{PASSWORD}@{HOST}/{DB}"
+
+
+if PORT != "":
+    db_url = f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}"
+
 
 config = context.config
 config.set_main_option("sqlalchemy.url", db_url)

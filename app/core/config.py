@@ -17,8 +17,13 @@ class Settings(BaseSettings):
     HOST = os.getenv("HOST")
     JWT_SECRET: str = os.getenv("JWT_KEY")
     DB: str = os.getenv("DB")
+    PORT: str = os.getenv("PORT")
 
     DB_URL: str = f'postgresql+asyncpg://{USER}:{PASSWORD}@{HOST}/{DB}'
+
+    if PORT != "":
+        DB_URL = f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}"
+
 
     ALGORITHM: str = 'HS256'
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60*24*7 # uma semana
